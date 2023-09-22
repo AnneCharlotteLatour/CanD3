@@ -4,7 +4,7 @@
 
 * To get the data :
 
-Statistics Canada. (2016). 2016 Census of Population [Canada] Public Use Microdata File (PUMF) Récupéré à partir de https://search2.odesi.ca/#/details?uri=%2Fodesi%2Fcen-98402-E-2016-pdc.xml, le 22 septembre 2023.
+Statistics Canada. 2019. Census of Population [Canada] Public Use Microdata File (PUMF): Individuals File. Statistics Canada [producer and distributor], accessed September 10, 2021. ID: pumf-98M0001-E-2016-individuals.
 
 * Dropbox from my work
   
