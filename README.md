@@ -4,9 +4,11 @@
 
 * To get the data :
 
+Statistics Canada. (2016). 2016 Census of Population [Canada] Public Use Microdata File (PUMF) Récupéré à partir de https://search2.odesi.ca/#/details?uri=%2Fodesi%2Fcen-98402-E-2016-pdc.xml, le 22 septembre 2023.
 
+* Dropbox from my work
+  
 https://www.dropbox.com/scl/fo/t3hqkzwnzsdznh1o87s49/h?rlkey=te6a0lpotbg3drdoezzlrqkfl&dl=0
-
 
 * The "Do" folder contains the "Built" do-file which cleans the data and selects the sample and the "Tables" do-file which allows you to obtain the tables present in the "Output" folder
 * The "Output" folder contains the descriptive statistics and regression tables in tex or word format
