@@ -1,5 +1,5 @@
 /*--------------------------------------------------*/
-/*        Date: 13 setpembre 2023	                */
+/*        Date: 22 septembre 2023	                */
 /*        Logiciel: Stata17 MP                      */
 /*        Auteur: Anne-Charlotte Latour             */
 /*        Courriel: annecharlotte.latour@gmail.com  */
