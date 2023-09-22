@@ -18,9 +18,9 @@ https://www.dropbox.com/scl/fo/t3hqkzwnzsdznh1o87s49/h?rlkey=te6a0lpotbg3drdoezz
 1. Data cleaning "Build.do"
 
    * Label the following variables *dpgrsum sex agegrp marsth citizen hdgree cfinc pr*
-   * Create a dichotomous variable _minority_ from *dprsum* which takes the value of 1 if the individual is anything but white
-   * Create an _educ_ variable which uses the *hdgree* variable but which groups categories 2 to 8 together and categories 10 and 12 together.
-   * Create a dichotomous variable _high_income_ which takes the value of 1 when individuals are part of the 20% of the richest distribution
+   * Create a dichotomous variable __minority__ from *dprsum* which takes the value of 1 if the individual is anything but white
+   * Create an __educ__ variable which uses the *hdgree* variable but which groups categories 2 to 8 together and categories 10 and 12 together.
+   * Create a dichotomous variable __high_income__ which takes the value of 1 when individuals are part of the 20% of the richest distribution
 2. Definition of analytic sample "Build.do"
 
    * Drop all missing values for each variable
