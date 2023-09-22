@@ -1,0 +1,462 @@
+{smcl}
+{txt}{sf}{ul off}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\03.Output\\logfile_22_Sep_2023-11_19_25-annec.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}22 Sep 2023, 11:19:25
+{txt}
+{com}. 
+. ***** Informations système *****
+. di "=== SYSTEM DIAGNOSTICS ==="
+{res}=== SYSTEM DIAGNOSTICS ===
+{txt}
+{com}. di "Stata version: `c(stata_version)'"
+{res}Stata version: 17
+{txt}
+{com}. di "Updated as of: `c(born_date)'"
+{res}Updated as of: 14 Jun 2021
+{txt}
+{com}. di "Processors:    `c(processors)'"
+{res}Processors:    1
+{txt}
+{com}. di "OS:            `c(os)' `c(osdtl)'"
+{res}OS:            Windows 64-bit
+{txt}
+{com}. di "Machine type:  `c(machine_type)'"
+{res}Machine type:  PC (64-bit x86-64)
+{txt}
+{com}. di "=========================="
+{res}==========================
+{txt}
+{com}. 
+. ***** Installation des packages *****
+. ***** Ajouter les packages requis de SSC à cette liste *****
+.     local ssc_packages "estout"
+{txt}
+{com}.     
+.     if !missing("`ssc_packages'") {c -(}
+.         foreach pkg in `ssc_packages' {c -(}
+{txt}  2{com}.             dis "Installing `pkg'"
+{txt}  3{com}.             ssc install `pkg', replace
+{txt}  4{com}.         {c )-}
+Installing estout
+{txt}checking {hilite:estout} consistency and verifying not already installed...
+all files already exist and are up to date.
+{com}.     {c )-}
+{txt}
+{com}. 
+. //*--------------*//
+. //*   Exécution  *//
+. //*--------------*//
+. 
+. do $wdDo\Build
+{txt}
+{com}. //*-----------------------------*//
+. //*       Importation Census    *//
+. //*-----------------------------*//
+. import delimited "$brutes\pumf-98M0001-E-2016-individuals_F1.csv", clear
+{res}{txt}(encoding automatically selected: ISO-8859-1)
+{text}(141 vars, 930,421 obs)
+
+{com}. 
+. save $wdDb\Census2016.dta, replace
+{txt}{p 0 4 2}
+file {bf}
+C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\02.Dta\\Census2016.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. 
+. //*-----------------------------*//
+. //*         Data Cleaning       *//
+. //*-----------------------------*//
+. 
+. recode dpgrsum (1 =0 ) (88=.) (2/15=1), gen(minority)
+{txt}(930421 differences between {bf:dpgrsum} and {bf:minority})
+
+{com}. label var minority "Do you have minority"
+{txt}
+{com}. 
+. label define dicho 1 "YES" 0 "NO" 
+{txt}
+{com}. label values minority dicho
+{txt}
+{com}. 
+. label define sex 1 "Female" 2 "Male" 
+{txt}
+{com}. label values sex sex
+{txt}
+{com}. 
+. label define age 1 "0 to 4 years" 2 "5 to 6 years" 3 "7 to 9 years" 4 "10 to 11 years" 5 "12 to 14 years" 6 "15 to 17 years" 7 "18 to 19 years" 8 "20 to 24 years" 9 "25 to 29 years" 10 "30 to 34 years" 11 "35 to 39 years" 12 "40 to 44 years" 13 "45 to 49 years" 14 "50 to 54 years" 15 "55 to 59 years" 16 "60 to 64 years" 17 "65 to 69 years" 18 "70 to 74 years" 19 "75 to 79 years" 20 "80 to 84 years" 21 "85 years and over" 88 "Missing" 
+{txt}
+{com}. label values agegrp age 
+{txt}
+{com}. 
+. label define marital 1 "Never legally married" 2 "Legally maried" 3 "Living common law" 4 "Separated" 5 "Divorced" 6 "Widowed"
+{txt}
+{com}. label values marsth marital
+{txt}
+{com}. 
+. label define immig 1 "Canadian citizen by birth" 2 "Canadian citizen by naturalization" 3 "Not a Canadian citizen"
+{txt}
+{com}. label values citizen immig
+{txt}
+{com}. 
+. label define educ 1 "No certificate, diploma or degree" 2 "Secondary (high) school diploma or equivalency certificate" 3 "Trades certificate or diploma other than Certificate of Appr" 4 "Certificate of Apprenticeship or Certificate of Qualification" 5 "Program of 3 months to less than 1 year" 6 "Program of 1 to 2 years" 7 "Program of more than 2 years" 8 "University certificate or diploma below bachelor level" 9 "Bachelor's degree" 10 "University certificate or diploma above bachelor level" 11 "Degree in medicine, dentistry, veterinary medicine or optome" 12 "Master's degree" 13 "Earned doctorate" 88 "Missing" 99 "Not applicable"
+{txt}
+{com}. label values hdgree educ 
+{txt}
+{com}. 
+. recode hdgree (1=1 "No certificate, diploma or degree") (2/8 =2 "less than Bachelor's degree") (9=3 "Bachelor's degree") (10 12 =4 "Second cycle diploma") (11=5 "Degree in medicine dentistry, veterinary medicine or optome") (13=6 "Earned doctorate") , gen(educ)
+{txt}(418919 differences between {bf:hdgree} and {bf:educ})
+
+{com}. 
+. label define revenu 1 "Under $2,000" 2 "$2,000 to $4,999" 3 "$5,000 to $6,999" 4 "$7,000 to $9,999" 5 "$10,000 to $11,999" 6 "$12,000 to $14,999" 7 "$15,000 to $16,999" 8 "$17,000 to $19,999" 9 "$20,000 to $24,999" 10 "$25,000 to $29,999" 11 "$30,000 to $34,999" 12 "$35,000 to $39,999" 13 "$40,000 to $44,999" 14 "$45,000 to $49,999" 15 "$50,000 to $54,999" 16 "$55,000 to $59,999" 17 "$60,000 to $64,999" 18 "$65,000 to $69,999" 19 "$70,000 to $74,999" 20 "$75,000 to $79,999" 21 "$80,000 to $84,999" 22 "$85,000 to $89,999" 23 "$90,000 to $94,999" 24 "$95,000 to $99,999" 25 "$100,000 to $109,999" 26 "$110,000 to $119,999" 27 "$120,000 to $129,999" 28 "$130,000 to $139,999" 29 "$140,000 to $149,999" 30 "$150,000 to $174,999" 31 "$175,000 to $199,999" 32 "$200,000 to $249,999" 33 "$250,000 and over" 88 "Missing" 
+{txt}
+{com}. label values cfinc revenu 
+{txt}
+{com}. 
+. label define province 10 "Newfoundland and Labrador" 11 "Prince Edward Island" 12 "Nova Scotia" 13 "New Brunswick" 24 "Quebec" 35 "Ontario" 46 "Manitoba" 47 "Saskatchewan" 48 "Alberta" 59 "British Columbia" 70 "Northern Canada" 
+{txt}
+{com}. label values pr province 
+{txt}
+{com}. 
+. recode pr (10 11 12 13= 1 "Atlantic Provinces") (24 35= 2 "Central Canada") (46 47 48= 3 "Prairie Provinces") (59= 4 "West Coast" ) (70=5 "Northern Territories"), gen(region)
+{txt}(930421 differences between {bf:pr} and {bf:region})
+
+{com}. 
+. xtile q5_Income=cfinc if cfinc!=88, nq(5)
+{txt}
+{com}. label variable q5_Income "Weighted Income quintile"
+{txt}
+{com}. 
+. gen high_income=(q5_Income==5) if cfinc!=88
+{txt}(5,542 missing values generated)
+
+{com}. label define high 0 "Q1 to Q4 distribution Income" 1 "Q5 distribution Income"
+{txt}
+{com}. label values high_income high
+{txt}
+{com}. 
+. //*-----------------------------*//
+. //*        analytic sample      *//
+. //*-----------------------------*//
+. 
+. drop if agegrp<6 | agegrp>16 // keep 15-64 years old
+{txt}(310,192 observations deleted)
+
+{com}. 
+. * drop missing 
+. drop if minority==. 
+{txt}(17,661 observations deleted)
+
+{com}. drop if cfinc==88
+{txt}(3,300 observations deleted)
+
+{com}. drop if educ==88
+{txt}(4,955 observations deleted)
+
+{com}. 
+. drop if region==5 //keep province only
+{txt}(1,472 observations deleted)
+
+{com}. 
+. 
+. save $wdDb\Census2016_final.dta, replace
+{txt}{p 0 4 2}
+file {bf}
+C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\02.Dta\\Census2016_final.dta{rm}
+saved
+{p_end}
+
+{com}. 
+{txt}end of do-file
+
+{com}. do $wdDo\Tables
+{txt}
+{com}. use $wdDb\Census2016_final.dta, clear
+{txt}
+{com}. 
+. //*------------------------------------*//
+. //*  Table of descriptives statistics  *//
+. //*------------------------------------*//
+. 
+. estpost tab minority 
+
+{txt}{space 0}{space 0}{ralign 12:minority}{space 1}{c |}{space 1}{ralign 9:e(b)}{space 1}{space 1}{ralign 9:e(pct)}{space 1}{space 1}{ralign 9:e(cumpct)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:NO}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   434586}}}{space 1}{space 1}{ralign 9:{res:{sf: 73.30566}}}{space 1}{space 1}{ralign 9:{res:{sf: 73.30566}}}{space 1}
+{space 0}{space 0}{ralign 12:YES}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   158255}}}{space 1}{space 1}{ralign 9:{res:{sf: 26.69434}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Total}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   592841}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}{space 1}{ralign 9:{res:{sf:{space 9}}}}{space 1}
+
+{com}. esttab using "${c -(}wdOut{c )-}table_statistics.rtf", cells("b(label(freq)) pct(fmt(2)) ") varlabels(`e(labels)') varwidth(30) nonumber nomtitle noobs title({c -(}\b Table minority{c )-}) replace
+{res}{txt}(output written to {browse  `"C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\03.Output\table_statistics.rtf"'})
+
+{com}. 
+. foreach y of varlist high_income educ sex agegrp marsth region {c -(}
+{txt}  2{com}. estpost tab `y'
+{txt}  3{com}. esttab using "${c -(}wdOut{c )-}table_statistics.rtf", cells("b(label(freq)) pct(fmt(2)) ") varlabels(`e(labels)') varwidth(30) nonumber nomtitle noobs append  title({c -(}\b Table `y'{c )-})     
+{txt}  4{com}. {c )-}
+
+{txt}{space 0}{space 0}{ralign 12:high_income}{space 1}{c |}{space 1}{ralign 9:e(b)}{space 1}{space 1}{ralign 9:e(pct)}{space 1}{space 1}{ralign 9:e(cumpct)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Q1_to_Q4_d~e}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   474300}}}{space 1}{space 1}{ralign 9:{res:{sf: 80.00459}}}{space 1}{space 1}{ralign 9:{res:{sf: 80.00459}}}{space 1}
+{space 0}{space 0}{ralign 12:Q5_distrib~e}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   118541}}}{space 1}{space 1}{ralign 9:{res:{sf: 19.99541}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Total}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   592841}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}{space 1}{ralign 9:{res:{sf:{space 9}}}}{space 1}
+{res}{txt}(output written to {browse  `"C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\03.Output\table_statistics.rtf"'})
+
+{space 0}{space 0}{ralign 12:educ}{space 1}{c |}{space 1}{ralign 9:e(b)}{space 1}{space 1}{ralign 9:e(pct)}{space 1}{space 1}{ralign 9:e(cumpct)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:1}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    93481}}}{space 1}{space 1}{ralign 9:{res:{sf: 15.76831}}}{space 1}{space 1}{ralign 9:{res:{sf: 15.76831}}}{space 1}
+{space 0}{space 0}{ralign 12:2}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   353962}}}{space 1}{space 1}{ralign 9:{res:{sf: 59.70606}}}{space 1}{space 1}{ralign 9:{res:{sf: 75.47437}}}{space 1}
+{space 0}{space 0}{ralign 12:3}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   100946}}}{space 1}{space 1}{ralign 9:{res:{sf:  17.0275}}}{space 1}{space 1}{ralign 9:{res:{sf: 92.50187}}}{space 1}
+{space 0}{space 0}{ralign 12:4}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    37279}}}{space 1}{space 1}{ralign 9:{res:{sf: 6.288195}}}{space 1}{space 1}{ralign 9:{res:{sf: 98.79006}}}{space 1}
+{space 0}{space 0}{ralign 12:5}{space 1}{c |}{space 1}{ralign 9:{res:{sf:     3337}}}{space 1}{space 1}{ralign 9:{res:{sf: .5628828}}}{space 1}{space 1}{ralign 9:{res:{sf: 99.35295}}}{space 1}
+{space 0}{space 0}{ralign 12:6}{space 1}{c |}{space 1}{ralign 9:{res:{sf:     3836}}}{space 1}{space 1}{ralign 9:{res:{sf: .6470538}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Total}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   592841}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}{space 1}{ralign 9:{res:{sf:{space 9}}}}{space 1}
+
+row labels saved in macro e(labels)
+{res}{txt}(output written to {browse  `"C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\03.Output\table_statistics.rtf"'})
+
+{space 0}{space 0}{ralign 12:sex}{space 1}{c |}{space 1}{ralign 9:e(b)}{space 1}{space 1}{ralign 9:e(pct)}{space 1}{space 1}{ralign 9:e(cumpct)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Female}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   300038}}}{space 1}{space 1}{ralign 9:{res:{sf:  50.6102}}}{space 1}{space 1}{ralign 9:{res:{sf:  50.6102}}}{space 1}
+{space 0}{space 0}{ralign 12:Male}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   292803}}}{space 1}{space 1}{ralign 9:{res:{sf:  49.3898}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Total}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   592841}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}{space 1}{ralign 9:{res:{sf:{space 9}}}}{space 1}
+{res}{txt}(output written to {browse  `"C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\03.Output\table_statistics.rtf"'})
+
+{space 0}{space 0}{ralign 12:agegrp}{space 1}{c |}{space 1}{ralign 9:e(b)}{space 1}{space 1}{ralign 9:e(pct)}{space 1}{space 1}{ralign 9:e(cumpct)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:15_to_17_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    31018}}}{space 1}{space 1}{ralign 9:{res:{sf: 5.232094}}}{space 1}{space 1}{ralign 9:{res:{sf: 5.232094}}}{space 1}
+{space 0}{space 0}{ralign 12:18_to_19_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    21139}}}{space 1}{space 1}{ralign 9:{res:{sf: 3.565712}}}{space 1}{space 1}{ralign 9:{res:{sf: 8.797806}}}{space 1}
+{space 0}{space 0}{ralign 12:20_to_24_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    56815}}}{space 1}{space 1}{ralign 9:{res:{sf: 9.583514}}}{space 1}{space 1}{ralign 9:{res:{sf: 18.38132}}}{space 1}
+{space 0}{space 0}{ralign 12:25_to_29_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    57361}}}{space 1}{space 1}{ralign 9:{res:{sf: 9.675613}}}{space 1}{space 1}{ralign 9:{res:{sf: 28.05693}}}{space 1}
+{space 0}{space 0}{ralign 12:30_to_34_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    58831}}}{space 1}{space 1}{ralign 9:{res:{sf: 9.923571}}}{space 1}{space 1}{ralign 9:{res:{sf:  37.9805}}}{space 1}
+{space 0}{space 0}{ralign 12:35_to_39_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    57536}}}{space 1}{space 1}{ralign 9:{res:{sf: 9.705132}}}{space 1}{space 1}{ralign 9:{res:{sf: 47.68564}}}{space 1}
+{space 0}{space 0}{ralign 12:40_to_44_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    56705}}}{space 1}{space 1}{ralign 9:{res:{sf: 9.564959}}}{space 1}{space 1}{ralign 9:{res:{sf:  57.2506}}}{space 1}
+{space 0}{space 0}{ralign 12:45_to_49_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    59348}}}{space 1}{space 1}{ralign 9:{res:{sf: 10.01078}}}{space 1}{space 1}{ralign 9:{res:{sf: 67.26137}}}{space 1}
+{space 0}{space 0}{ralign 12:50_to_54_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    68553}}}{space 1}{space 1}{ralign 9:{res:{sf: 11.56347}}}{space 1}{space 1}{ralign 9:{res:{sf: 78.82485}}}{space 1}
+{space 0}{space 0}{ralign 12:55_to_59_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    67335}}}{space 1}{space 1}{ralign 9:{res:{sf: 11.35802}}}{space 1}{space 1}{ralign 9:{res:{sf: 90.18287}}}{space 1}
+{space 0}{space 0}{ralign 12:60_to_64_y~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    58200}}}{space 1}{space 1}{ralign 9:{res:{sf: 9.817135}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Total}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   592841}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}{space 1}{ralign 9:{res:{sf:{space 9}}}}{space 1}
+{res}{txt}(output written to {browse  `"C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\03.Output\table_statistics.rtf"'})
+
+{space 0}{space 0}{ralign 12:marsth}{space 1}{c |}{space 1}{ralign 9:e(b)}{space 1}{space 1}{ralign 9:e(pct)}{space 1}{space 1}{ralign 9:e(cumpct)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Never_lega~d}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   199658}}}{space 1}{space 1}{ralign 9:{res:{sf: 33.67817}}}{space 1}{space 1}{ralign 9:{res:{sf: 33.67817}}}{space 1}
+{space 0}{space 0}{ralign 12:Legally_ma~d}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   257688}}}{space 1}{space 1}{ralign 9:{res:{sf: 43.46663}}}{space 1}{space 1}{ralign 9:{res:{sf:  77.1448}}}{space 1}
+{space 0}{space 0}{ralign 12:Living_com~w}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    84654}}}{space 1}{space 1}{ralign 9:{res:{sf: 14.27938}}}{space 1}{space 1}{ralign 9:{res:{sf: 91.42418}}}{space 1}
+{space 0}{space 0}{ralign 12:Separated}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    13726}}}{space 1}{space 1}{ralign 9:{res:{sf: 2.315292}}}{space 1}{space 1}{ralign 9:{res:{sf: 93.73947}}}{space 1}
+{space 0}{space 0}{ralign 12:Divorced}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    30508}}}{space 1}{space 1}{ralign 9:{res:{sf: 5.146068}}}{space 1}{space 1}{ralign 9:{res:{sf: 98.88554}}}{space 1}
+{space 0}{space 0}{ralign 12:Widowed}{space 1}{c |}{space 1}{ralign 9:{res:{sf:     6607}}}{space 1}{space 1}{ralign 9:{res:{sf: 1.114464}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Total}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   592841}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}{space 1}{ralign 9:{res:{sf:{space 9}}}}{space 1}
+{res}{txt}(output written to {browse  `"C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\03.Output\table_statistics.rtf"'})
+
+{space 0}{space 0}{ralign 12:region}{space 1}{c |}{space 1}{ralign 9:e(b)}{space 1}{space 1}{ralign 9:e(pct)}{space 1}{space 1}{ralign 9:e(cumpct)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Atlantic_P~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    37874}}}{space 1}{space 1}{ralign 9:{res:{sf: 6.388559}}}{space 1}{space 1}{ralign 9:{res:{sf: 6.388559}}}{space 1}
+{space 0}{space 0}{ralign 12:Central_Ca~a}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   368662}}}{space 1}{space 1}{ralign 9:{res:{sf: 62.18565}}}{space 1}{space 1}{ralign 9:{res:{sf:  68.5742}}}{space 1}
+{space 0}{space 0}{ralign 12:Prairie_Pr~s}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   107967}}}{space 1}{space 1}{ralign 9:{res:{sf:  18.2118}}}{space 1}{space 1}{ralign 9:{res:{sf:   86.786}}}{space 1}
+{space 0}{space 0}{ralign 12:West_Coast}{space 1}{c |}{space 1}{ralign 9:{res:{sf:    78338}}}{space 1}{space 1}{ralign 9:{res:{sf:   13.214}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:Total}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   592841}}}{space 1}{space 1}{ralign 9:{res:{sf:      100}}}{space 1}{space 1}{ralign 9:{res:{sf:{space 9}}}}{space 1}
+{res}{txt}(output written to {browse  `"C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\03.Output\table_statistics.rtf"'})
+
+{com}. 
+. //*------------------------------------*//
+. //*   Table of multivariate analyses   *//
+. //*------------------------------------*//
+. 
+. reg minority i.high_income i.educ i.sex i.agegrp i.marsth i.region , r 
+
+{txt}Linear regression                               Number of obs     = {res}   592,841
+                                                {txt}F(25, 592815)     =  {res}  2476.63
+                                                {txt}Prob > F          = {res}    0.0000
+                                                {txt}R-squared         = {res}    0.0815
+                                                {txt}Root MSE          =    {res} .42397
+
+{txt}{hline 27}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 28}{c |}{col 40}    Robust
+{col 1}                  minority{col 28}{c |} Coefficient{col 40}  std. err.{col 52}      t{col 60}   P>|t|{col 68}     [95% con{col 81}f. interval]
+{hline 27}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 15}high_income {c |}
+{space 3}Q5 distribution Income  {c |}{col 28}{res}{space 2}-.1510027{col 40}{space 2} .0013661{col 51}{space 1} -110.53{col 60}{space 3}0.000{col 68}{space 4}-.1536802{col 81}{space 3}-.1483251
+{txt}{space 26} {c |}
+{space 22}educ {c |}
+less than Bachelor's de..  {c |}{col 28}{res}{space 2}-.0685928{col 40}{space 2} .0018365{col 51}{space 1}  -37.35{col 60}{space 3}0.000{col 68}{space 4}-.0721924{col 81}{space 3}-.0649933
+{txt}{space 8}Bachelor's degree  {c |}{col 28}{res}{space 2} .0359192{col 40}{space 2} .0022804{col 51}{space 1}   15.75{col 60}{space 3}0.000{col 68}{space 4} .0314497{col 81}{space 3} .0403887
+{txt}{space 5}Second cycle diploma  {c |}{col 28}{res}{space 2} .0648045{col 40}{space 2} .0029582{col 51}{space 1}   21.91{col 60}{space 3}0.000{col 68}{space 4} .0590066{col 81}{space 3} .0706024
+{txt}Degree in medicine dent..  {c |}{col 28}{res}{space 2} .1422187{col 40}{space 2} .0081247{col 51}{space 1}   17.50{col 60}{space 3}0.000{col 68}{space 4} .1262946{col 81}{space 3} .1581428
+{txt}{space 9}Earned doctorate  {c |}{col 28}{res}{space 2} .0699006{col 40}{space 2} .0074632{col 51}{space 1}    9.37{col 60}{space 3}0.000{col 68}{space 4} .0552731{col 81}{space 3} .0845282
+{txt}{space 26} {c |}
+{space 23}sex {c |}
+{space 21}Male  {c |}{col 28}{res}{space 2}-.0108408{col 40}{space 2} .0011121{col 51}{space 1}   -9.75{col 60}{space 3}0.000{col 68}{space 4}-.0130205{col 81}{space 3}-.0086611
+{txt}{space 26} {c |}
+{space 20}agegrp {c |}
+{space 11}18 to 19 years  {c |}{col 28}{res}{space 2} .0483642{col 40}{space 2}  .004309{col 51}{space 1}   11.22{col 60}{space 3}0.000{col 68}{space 4} .0399188{col 81}{space 3} .0568096
+{txt}{space 11}20 to 24 years  {c |}{col 28}{res}{space 2} .0208789{col 40}{space 2} .0035825{col 51}{space 1}    5.83{col 60}{space 3}0.000{col 68}{space 4} .0138572{col 81}{space 3} .0279005
+{txt}{space 11}25 to 29 years  {c |}{col 28}{res}{space 2}-.0365352{col 40}{space 2} .0036619{col 51}{space 1}   -9.98{col 60}{space 3}0.000{col 68}{space 4}-.0437124{col 81}{space 3} -.029358
+{txt}{space 11}30 to 34 years  {c |}{col 28}{res}{space 2}-.0594268{col 40}{space 2} .0037131{col 51}{space 1}  -16.00{col 60}{space 3}0.000{col 68}{space 4}-.0667044{col 81}{space 3}-.0521491
+{txt}{space 11}35 to 39 years  {c |}{col 28}{res}{space 2}-.0637337{col 40}{space 2} .0037411{col 51}{space 1}  -17.04{col 60}{space 3}0.000{col 68}{space 4}-.0710661{col 81}{space 3}-.0564013
+{txt}{space 11}40 to 44 years  {c |}{col 28}{res}{space 2}-.0695583{col 40}{space 2} .0037393{col 51}{space 1}  -18.60{col 60}{space 3}0.000{col 68}{space 4}-.0768872{col 81}{space 3}-.0622293
+{txt}{space 11}45 to 49 years  {c |}{col 28}{res}{space 2}-.0857341{col 40}{space 2}  .003699{col 51}{space 1}  -23.18{col 60}{space 3}0.000{col 68}{space 4} -.092984{col 81}{space 3}-.0784841
+{txt}{space 11}50 to 54 years  {c |}{col 28}{res}{space 2}-.1317917{col 40}{space 2} .0035906{col 51}{space 1}  -36.70{col 60}{space 3}0.000{col 68}{space 4}-.1388292{col 81}{space 3}-.1247542
+{txt}{space 11}55 to 59 years  {c |}{col 28}{res}{space 2}-.1793815{col 40}{space 2} .0035729{col 51}{space 1}  -50.21{col 60}{space 3}0.000{col 68}{space 4}-.1863843{col 81}{space 3}-.1723787
+{txt}{space 11}60 to 64 years  {c |}{col 28}{res}{space 2}-.2145261{col 40}{space 2} .0036463{col 51}{space 1}  -58.83{col 60}{space 3}0.000{col 68}{space 4}-.2216726{col 81}{space 3}-.2073795
+{txt}{space 26} {c |}
+{space 20}marsth {c |}
+{space 11}Legally maried  {c |}{col 28}{res}{space 2} .0861358{col 40}{space 2}  .001686{col 51}{space 1}   51.09{col 60}{space 3}0.000{col 68}{space 4} .0828312{col 81}{space 3} .0894403
+{txt}{space 8}Living common law  {c |}{col 28}{res}{space 2}-.1114344{col 40}{space 2} .0017328{col 51}{space 1}  -64.31{col 60}{space 3}0.000{col 68}{space 4}-.1148307{col 81}{space 3}-.1080381
+{txt}{space 16}Separated  {c |}{col 28}{res}{space 2} .0273264{col 40}{space 2} .0039359{col 51}{space 1}    6.94{col 60}{space 3}0.000{col 68}{space 4}  .019612{col 81}{space 3} .0350407
+{txt}{space 17}Divorced  {c |}{col 28}{res}{space 2} .0012277{col 40}{space 2} .0027319{col 51}{space 1}    0.45{col 60}{space 3}0.653{col 68}{space 4}-.0041268{col 81}{space 3} .0065822
+{txt}{space 18}Widowed  {c |}{col 28}{res}{space 2} .0570948{col 40}{space 2} .0053343{col 51}{space 1}   10.70{col 60}{space 3}0.000{col 68}{space 4} .0466397{col 81}{space 3} .0675498
+{txt}{space 26} {c |}
+{space 20}region {c |}
+{space 11}Central Canada  {c |}{col 28}{res}{space 2} .1818424{col 40}{space 2} .0015965{col 51}{space 1}  113.90{col 60}{space 3}0.000{col 68}{space 4} .1787133{col 81}{space 3} .1849714
+{txt}{space 8}Prairie Provinces  {c |}{col 28}{res}{space 2} .2016469{col 40}{space 2} .0019647{col 51}{space 1}  102.63{col 60}{space 3}0.000{col 68}{space 4} .1977961{col 81}{space 3} .2054977
+{txt}{space 15}West Coast  {c |}{col 28}{res}{space 2} .2786977{col 40}{space 2} .0021969{col 51}{space 1}  126.86{col 60}{space 3}0.000{col 68}{space 4} .2743918{col 81}{space 3} .2830035
+{txt}{space 26} {c |}
+{space 21}_cons {c |}{col 28}{res}{space 2} .2063129{col 40}{space 2}  .003016{col 51}{space 1}   68.41{col 60}{space 3}0.000{col 68}{space 4} .2004016{col 81}{space 3} .2122241
+{txt}{hline 27}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. estimates store model1
+{txt}
+{com}. 
+. probit minority i.high_income i.educ i.sex i.agegrp i.marsth i.region ,r
+
+{res}{txt}Iteration 0:{space 3}log pseudolikelihood = {res:-343963.34}  
+Iteration 1:{space 3}log pseudolikelihood = {res:-317845.23}  
+Iteration 2:{space 3}log pseudolikelihood = {res:-317568.59}  
+Iteration 3:{space 3}log pseudolikelihood = {res:-317568.21}  
+Iteration 4:{space 3}log pseudolikelihood = {res:-317568.21}  
+{res}
+{txt}Probit regression{col 55}{lalign 13:Number of obs}{col 68} = {res}{ralign 8:592,841}
+{txt}{col 55}{lalign 13:Wald chi2({res:25})}{col 68} = {res}{ralign 8:42125.67}
+{txt}{col 55}{lalign 13:Prob > chi2}{col 68} = {res}{ralign 8:0.0000}
+{txt}Log pseudolikelihood = {res:-317568.21}{col 55}{lalign 13:Pseudo R2}{col 68} = {res}{ralign 8:0.0767}
+
+{txt}{hline 27}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 28}{c |}{col 40}    Robust
+{col 1}                  minority{col 28}{c |} Coefficient{col 40}  std. err.{col 52}      z{col 60}   P>|z|{col 68}     [95% con{col 81}f. interval]
+{hline 27}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 15}high_income {c |}
+{space 3}Q5 distribution Income  {c |}{col 28}{res}{space 2} -.503625{col 40}{space 2} .0051443{col 51}{space 1}  -97.90{col 60}{space 3}0.000{col 68}{space 4}-.5137077{col 81}{space 3}-.4935423
+{txt}{space 26} {c |}
+{space 22}educ {c |}
+less than Bachelor's de..  {c |}{col 28}{res}{space 2} -.230261{col 40}{space 2} .0058118{col 51}{space 1}  -39.62{col 60}{space 3}0.000{col 68}{space 4}-.2416519{col 81}{space 3}-.2188702
+{txt}{space 8}Bachelor's degree  {c |}{col 28}{res}{space 2} .0962882{col 40}{space 2}  .006958{col 51}{space 1}   13.84{col 60}{space 3}0.000{col 68}{space 4} .0826508{col 81}{space 3} .1099256
+{txt}{space 5}Second cycle diploma  {c |}{col 28}{res}{space 2} .1810431{col 40}{space 2} .0088339{col 51}{space 1}   20.49{col 60}{space 3}0.000{col 68}{space 4}  .163729{col 81}{space 3} .1983573
+{txt}Degree in medicine dent..  {c |}{col 28}{res}{space 2}  .414084{col 40}{space 2}  .023139{col 51}{space 1}   17.90{col 60}{space 3}0.000{col 68}{space 4} .3687323{col 81}{space 3} .4594356
+{txt}{space 9}Earned doctorate  {c |}{col 28}{res}{space 2} .2083223{col 40}{space 2} .0223946{col 51}{space 1}    9.30{col 60}{space 3}0.000{col 68}{space 4} .1644298{col 81}{space 3} .2522149
+{txt}{space 26} {c |}
+{space 23}sex {c |}
+{space 21}Male  {c |}{col 28}{res}{space 2}-.0385124{col 40}{space 2} .0036594{col 51}{space 1}  -10.52{col 60}{space 3}0.000{col 68}{space 4}-.0456847{col 81}{space 3}-.0313402
+{txt}{space 26} {c |}
+{space 20}agegrp {c |}
+{space 11}18 to 19 years  {c |}{col 28}{res}{space 2} .1605147{col 40}{space 2} .0123561{col 51}{space 1}   12.99{col 60}{space 3}0.000{col 68}{space 4} .1362972{col 81}{space 3} .1847322
+{txt}{space 11}20 to 24 years  {c |}{col 28}{res}{space 2} .0869166{col 40}{space 2} .0104342{col 51}{space 1}    8.33{col 60}{space 3}0.000{col 68}{space 4} .0664659{col 81}{space 3} .1073673
+{txt}{space 11}25 to 29 years  {c |}{col 28}{res}{space 2}-.0885637{col 40}{space 2}  .010798{col 51}{space 1}   -8.20{col 60}{space 3}0.000{col 68}{space 4}-.1097275{col 81}{space 3}-.0673999
+{txt}{space 11}30 to 34 years  {c |}{col 28}{res}{space 2}-.1697679{col 40}{space 2} .0110433{col 51}{space 1}  -15.37{col 60}{space 3}0.000{col 68}{space 4}-.1914123{col 81}{space 3}-.1481235
+{txt}{space 11}35 to 39 years  {c |}{col 28}{res}{space 2}-.1863023{col 40}{space 2} .0111877{col 51}{space 1}  -16.65{col 60}{space 3}0.000{col 68}{space 4}-.2082298{col 81}{space 3}-.1643747
+{txt}{space 11}40 to 44 years  {c |}{col 28}{res}{space 2}-.2064797{col 40}{space 2} .0112462{col 51}{space 1}  -18.36{col 60}{space 3}0.000{col 68}{space 4}-.2285218{col 81}{space 3}-.1844376
+{txt}{space 11}45 to 49 years  {c |}{col 28}{res}{space 2}-.2576969{col 40}{space 2} .0112039{col 51}{space 1}  -23.00{col 60}{space 3}0.000{col 68}{space 4}-.2796562{col 81}{space 3}-.2357376
+{txt}{space 11}50 to 54 years  {c |}{col 28}{res}{space 2}-.4127183{col 40}{space 2} .0110891{col 51}{space 1}  -37.22{col 60}{space 3}0.000{col 68}{space 4}-.4344525{col 81}{space 3}-.3909842
+{txt}{space 11}55 to 59 years  {c |}{col 28}{res}{space 2}-.5837411{col 40}{space 2} .0112868{col 51}{space 1}  -51.72{col 60}{space 3}0.000{col 68}{space 4}-.6058628{col 81}{space 3}-.5616194
+{txt}{space 11}60 to 64 years  {c |}{col 28}{res}{space 2}-.7062645{col 40}{space 2} .0117724{col 51}{space 1}  -59.99{col 60}{space 3}0.000{col 68}{space 4}-.7293379{col 81}{space 3} -.683191
+{txt}{space 26} {c |}
+{space 20}marsth {c |}
+{space 11}Legally maried  {c |}{col 28}{res}{space 2} .2746596{col 40}{space 2} .0054037{col 51}{space 1}   50.83{col 60}{space 3}0.000{col 68}{space 4} .2640685{col 81}{space 3} .2852507
+{txt}{space 8}Living common law  {c |}{col 28}{res}{space 2}-.4435431{col 40}{space 2} .0069097{col 51}{space 1}  -64.19{col 60}{space 3}0.000{col 68}{space 4}-.4570859{col 81}{space 3}-.4300003
+{txt}{space 16}Separated  {c |}{col 28}{res}{space 2} .1007249{col 40}{space 2} .0128803{col 51}{space 1}    7.82{col 60}{space 3}0.000{col 68}{space 4}   .07548{col 81}{space 3} .1259699
+{txt}{space 17}Divorced  {c |}{col 28}{res}{space 2} .0069134{col 40}{space 2} .0097362{col 51}{space 1}    0.71{col 60}{space 3}0.478{col 68}{space 4}-.0121692{col 81}{space 3} .0259959
+{txt}{space 18}Widowed  {c |}{col 28}{res}{space 2} .2027459{col 40}{space 2} .0182931{col 51}{space 1}   11.08{col 60}{space 3}0.000{col 68}{space 4} .1668921{col 81}{space 3} .2385996
+{txt}{space 26} {c |}
+{space 20}region {c |}
+{space 11}Central Canada  {c |}{col 28}{res}{space 2} .7985394{col 40}{space 2}  .010291{col 51}{space 1}   77.60{col 60}{space 3}0.000{col 68}{space 4} .7783694{col 81}{space 3} .8187093
+{txt}{space 8}Prairie Provinces  {c |}{col 28}{res}{space 2} .8627137{col 40}{space 2}  .010877{col 51}{space 1}   79.32{col 60}{space 3}0.000{col 68}{space 4} .8413952{col 81}{space 3} .8840322
+{txt}{space 15}West Coast  {c |}{col 28}{res}{space 2} 1.089152{col 40}{space 2} .0110722{col 51}{space 1}   98.37{col 60}{space 3}0.000{col 68}{space 4} 1.067451{col 81}{space 3} 1.110853
+{txt}{space 26} {c |}
+{space 21}_cons {c |}{col 28}{res}{space 2}-1.058698{col 40}{space 2} .0124549{col 51}{space 1}  -85.00{col 60}{space 3}0.000{col 68}{space 4}-1.083109{col 81}{space 3}-1.034287
+{txt}{hline 27}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. estimates store model2
+{txt}
+{com}.         margins, dydx(*) post
+{res}
+{txt}Average marginal effects{col 56}{lalign 13:Number of obs}{col 69} = {res}{ralign 7:592,841}
+{txt}{col 1}Model VCE: {res:Robust}
+
+{txt}{p2colset 1 13 13 2}{...}
+{p2col:Expression:}{res:Pr(minority), predict()}{p_end}
+{p2col:dy/dx wrt:}{res:1.high_income 2.educ 3.educ 4.educ 5.educ 6.educ 2.sex 7.agegrp 8.agegrp 9.agegrp 10.agegrp 11.agegrp 12.agegrp 13.agegrp 14.agegrp 15.agegrp 16.agegrp 2.marsth 3.marsth 4.marsth 5.marsth 6.marsth 2.region 3.region 4.region}{p_end}
+{p2colreset}{...}
+
+{res}{txt}{hline 27}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 28}{c |}{col 40} Delta-method
+{col 28}{c |}      dy/dx{col 40}   std. err.{col 52}      z{col 60}   P>|z|{col 68}     [95% con{col 81}f. interval]
+{hline 27}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 15}high_income {c |}
+{space 3}Q5 distribution Income  {c |}{col 28}{res}{space 2}-.1388994{col 40}{space 2} .0012438{col 51}{space 1} -111.67{col 60}{space 3}0.000{col 68}{space 4}-.1413372{col 81}{space 3}-.1364615
+{txt}{space 26} {c |}
+{space 22}educ {c |}
+less than Bachelor's de..  {c |}{col 28}{res}{space 2}-.0698549{col 40}{space 2} .0018309{col 51}{space 1}  -38.15{col 60}{space 3}0.000{col 68}{space 4}-.0734434{col 81}{space 3}-.0662663
+{txt}{space 8}Bachelor's degree  {c |}{col 28}{res}{space 2}  .031775{col 40}{space 2}  .002287{col 51}{space 1}   13.89{col 60}{space 3}0.000{col 68}{space 4} .0272924{col 81}{space 3} .0362575
+{txt}{space 5}Second cycle diploma  {c |}{col 28}{res}{space 2} .0607729{col 40}{space 2} .0029894{col 51}{space 1}   20.33{col 60}{space 3}0.000{col 68}{space 4} .0549138{col 81}{space 3}  .066632
+{txt}Degree in medicine dent..  {c |}{col 28}{res}{space 2} .1441321{col 40}{space 2} .0084048{col 51}{space 1}   17.15{col 60}{space 3}0.000{col 68}{space 4}  .127659{col 81}{space 3} .1606052
+{txt}{space 9}Earned doctorate  {c |}{col 28}{res}{space 2} .0702847{col 40}{space 2} .0078068{col 51}{space 1}    9.00{col 60}{space 3}0.000{col 68}{space 4} .0549836{col 81}{space 3} .0855858
+{txt}{space 26} {c |}
+{space 23}sex {c |}
+{space 21}Male  {c |}{col 28}{res}{space 2}-.0116766{col 40}{space 2} .0011094{col 51}{space 1}  -10.53{col 60}{space 3}0.000{col 68}{space 4}-.0138509{col 81}{space 3}-.0095022
+{txt}{space 26} {c |}
+{space 20}agegrp {c |}
+{space 11}18 to 19 years  {c |}{col 28}{res}{space 2} .0566848{col 40}{space 2} .0043613{col 51}{space 1}   13.00{col 60}{space 3}0.000{col 68}{space 4} .0481368{col 81}{space 3} .0652328
+{txt}{space 11}20 to 24 years  {c |}{col 28}{res}{space 2}  .030376{col 40}{space 2} .0036233{col 51}{space 1}    8.38{col 60}{space 3}0.000{col 68}{space 4} .0232744{col 81}{space 3} .0374776
+{txt}{space 11}25 to 29 years  {c |}{col 28}{res}{space 2}-.0300053{col 40}{space 2} .0036833{col 51}{space 1}   -8.15{col 60}{space 3}0.000{col 68}{space 4}-.0372243{col 81}{space 3}-.0227862
+{txt}{space 11}30 to 34 years  {c |}{col 28}{res}{space 2}-.0565335{col 40}{space 2} .0037265{col 51}{space 1}  -15.17{col 60}{space 3}0.000{col 68}{space 4}-.0638373{col 81}{space 3}-.0492296
+{txt}{space 11}35 to 39 years  {c |}{col 28}{res}{space 2}-.0618086{col 40}{space 2} .0037641{col 51}{space 1}  -16.42{col 60}{space 3}0.000{col 68}{space 4} -.069186{col 81}{space 3}-.0544311
+{txt}{space 11}40 to 44 years  {c |}{col 28}{res}{space 2}-.0681851{col 40}{space 2} .0037711{col 51}{space 1}  -18.08{col 60}{space 3}0.000{col 68}{space 4}-.0755762{col 81}{space 3}-.0607939
+{txt}{space 11}45 to 49 years  {c |}{col 28}{res}{space 2}  -.08406{col 40}{space 2} .0037299{col 51}{space 1}  -22.54{col 60}{space 3}0.000{col 68}{space 4}-.0913704{col 81}{space 3}-.0767497
+{txt}{space 11}50 to 54 years  {c |}{col 28}{res}{space 2}-.1291964{col 40}{space 2} .0036108{col 51}{space 1}  -35.78{col 60}{space 3}0.000{col 68}{space 4}-.1362735{col 81}{space 3}-.1221193
+{txt}{space 11}55 to 59 years  {c |}{col 28}{res}{space 2}-.1734828{col 40}{space 2}  .003552{col 51}{space 1}  -48.84{col 60}{space 3}0.000{col 68}{space 4}-.1804445{col 81}{space 3}-.1665211
+{txt}{space 11}60 to 64 years  {c |}{col 28}{res}{space 2}-.2014672{col 40}{space 2} .0035612{col 51}{space 1}  -56.57{col 60}{space 3}0.000{col 68}{space 4} -.208447{col 81}{space 3}-.1944874
+{txt}{space 26} {c |}
+{space 20}marsth {c |}
+{space 11}Legally maried  {c |}{col 28}{res}{space 2} .0870725{col 40}{space 2} .0016662{col 51}{space 1}   52.26{col 60}{space 3}0.000{col 68}{space 4} .0838068{col 81}{space 3} .0903383
+{txt}{space 8}Living common law  {c |}{col 28}{res}{space 2} -.110709{col 40}{space 2} .0016224{col 51}{space 1}  -68.24{col 60}{space 3}0.000{col 68}{space 4}-.1138888{col 81}{space 3}-.1075292
+{txt}{space 16}Separated  {c |}{col 28}{res}{space 2} .0304991{col 40}{space 2} .0039879{col 51}{space 1}    7.65{col 60}{space 3}0.000{col 68}{space 4}  .022683{col 81}{space 3} .0383152
+{txt}{space 17}Divorced  {c |}{col 28}{res}{space 2} .0020351{col 40}{space 2} .0028698{col 51}{space 1}    0.71{col 60}{space 3}0.478{col 68}{space 4}-.0035895{col 81}{space 3} .0076597
+{txt}{space 18}Widowed  {c |}{col 28}{res}{space 2} .0631309{col 40}{space 2} .0059584{col 51}{space 1}   10.60{col 60}{space 3}0.000{col 68}{space 4} .0514527{col 81}{space 3} .0748091
+{txt}{space 26} {c |}
+{space 20}region {c |}
+{space 11}Central Canada  {c |}{col 28}{res}{space 2} .1796667{col 40}{space 2} .0015996{col 51}{space 1}  112.32{col 60}{space 3}0.000{col 68}{space 4} .1765316{col 81}{space 3} .1828018
+{txt}{space 8}Prairie Provinces  {c |}{col 28}{res}{space 2} .1996721{col 40}{space 2} .0019616{col 51}{space 1}  101.79{col 60}{space 3}0.000{col 68}{space 4} .1958273{col 81}{space 3} .2035169
+{txt}{space 15}West Coast  {c |}{col 28}{res}{space 2} .2754706{col 40}{space 2} .0021834{col 51}{space 1}  126.17{col 60}{space 3}0.000{col 68}{space 4} .2711912{col 81}{space 3}   .27975
+{txt}{hline 27}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{p 0 6 0 92}Note: dy/dx for factor levels is the discrete change from the base level.{txt}{p_end}
+{res}{txt}
+{com}.         estimates store model3
+{txt}
+{com}.         
+. esttab model1 model2 model3 using "${c -(}wdOut{c )-}Table_analyses.rtf", cells(b(star fmt(3)) se(par fmt(2))) stats(r2_a ll N, fmt(%9.3f %9.0g) labels(R-squared Likelihood)) legend label  nonumbers eqlabels(none) collabels(none) mtitle("OLS""PROBIT" "AME-Probit") varlabels(_cons Constant) drop(0.high_income 1.educ 1.sex 6.agegrp 1.marsth 1.region) replace addnote("Standard errors in parentheses")
+{res}{txt}(output written to {browse  `"C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\03.Output\Table_analyses.rtf"'})
+
+{com}. 
+{txt}end of do-file
+
+{com}. 
+. 
+. log close _all
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\annec\Dropbox\Doctorat\CanD3\Reproductibility\03.Output\\logfile_22_Sep_2023-11_19_25-annec.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}22 Sep 2023, 11:21:50
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
