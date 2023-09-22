@@ -31,6 +31,8 @@ https://www.dropbox.com/scl/fo/t3hqkzwnzsdznh1o87s49/h?rlkey=te6a0lpotbg3drdoezz
 3. Table of descriptive statistics "Tables.do" & "table_statistics.tex"
  
    * Makes a frequency table of one of the following variables *minority sex agegrp marsth citizen educ high_income pr*
+  (Save as table_statistics)
 4. Table of multivariable analyses "Tables.do" & "Table_analyses.tex"
 
    * Regresses an OLS model, a logit model and an AME with the dependent variable minority on the variables *high_income educ sex agegrp marsth citizen pr*
+(Save as Table_analyses)
