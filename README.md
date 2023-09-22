@@ -22,6 +22,8 @@ https://www.dropbox.com/scl/fo/t3hqkzwnzsdznh1o87s49/h?rlkey=te6a0lpotbg3drdoezz
    * Create an "educ" variable which uses the *hdgree* variable but which groups categories 2 to 8 together and categories 10 and 12 together.
    * Create a dichotomous variable high_income which takes the value of 1 when individuals are part of the 20% of the richest distribution
 2. Definition of analytic sample "Build.do"
-   * 
+
+   * Drop all missing values for each variable
+   * Keep 15-64 years old
 4. Table of descriptive statistics "Tables.do" & "table_statistics.tex"
 5. Table of multivariable analyses "Tables.do" & "Table_analyses.tex"
