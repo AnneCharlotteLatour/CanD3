@@ -34,5 +34,5 @@ https://www.dropbox.com/scl/fo/t3hqkzwnzsdznh1o87s49/h?rlkey=te6a0lpotbg3drdoezz
   (Save as table_statistics)
 4. Table of multivariable analyses "Tables.do" & "Table_analyses.tex"
 
-   * Regresses an OLS model, a logit model and an AME with the dependent variable minority on the variables *high_income educ sex agegrp marsth citizen pr*
+   * Regresses an OLS model, a probit model and an AME with the dependent variable minority on the variables *high_income educ sex agegrp marsth citizen pr*
 (Save as Table_analyses)
